@@ -5,16 +5,16 @@ import com.alibaba.cloud.ai.graph.action.EdgeAction;
 
 import static com.alibaba.cloud.ai.graph.StateGraph.END;
 
+
 /**
  * @author yingzi
- * @date 2025/5/17 18:31
+ * @date 2025/5/18 15:52
  */
 
-public class CoordinatorDispatcher implements EdgeAction {
-
+public class PlannerDispatcher implements EdgeAction {
 
     @Override
     public String apply(OverAllState state) {
-        return (String) state.value("coordinator_next_step").orElse(END);
+        return (String) state.value("planner_next_step").orElse(END);
     }
 }

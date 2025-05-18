@@ -21,6 +21,7 @@
         <spring-boot.version>3.3.11</spring-boot.version>
         <spring-ai-alibaba-graph-core.version>1.0.0-M8.1-SNAPSHOT</spring-ai-alibaba-graph-core.version>
         <ai-alibaba.version>1.0.0-M8.1-SNAPSHOT</ai-alibaba.version>
+        <lombok.version>1.18.32</lombok.version>
     </properties>
 
     <dependencies>
@@ -41,6 +42,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
 
     </dependencies>

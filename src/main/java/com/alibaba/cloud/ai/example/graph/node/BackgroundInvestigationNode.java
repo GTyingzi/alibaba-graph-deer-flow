@@ -1,6 +1,8 @@
 package com.alibaba.cloud.ai.example.graph.node;
 
 import com.alibaba.cloud.ai.example.graph.model.SearchedContent;
+import com.alibaba.cloud.ai.example.graph.model.TavilySearchResponse;
+import com.alibaba.cloud.ai.example.graph.tool.search.tavily.TavilySearchApi;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import org.slf4j.Logger;
@@ -18,29 +20,31 @@ public class BackgroundInvestigationNode implements NodeAction {
 
     private static final Logger logger = LoggerFactory.getLogger(BackgroundInvestigationNode.class);
 
+    private final TavilySearchApi tavilySearchApi;
+    public BackgroundInvestigationNode(TavilySearchApi tavilySearchApi){
+        this.tavilySearchApi = tavilySearchApi;
+    }
+
 
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         logger.info("background investigation node is running.");
-
         Optional<Object> messagesOpt = state.value("messages");
         List<Message> messages = messagesOpt
                 .map(obj -> (List<Message>) obj)
                 .orElse(List.of());
         Message lastMessage = messages.isEmpty() ? null : messages.get(messages.size() - 1);
         String query = lastMessage.getText();
-        // todo 调用tavily_search_tool工具查询结果
-        List<SearchedContent> searchedContentList = Collections.singletonList(new SearchedContent("1", "1"));
+        TavilySearchResponse response = tavilySearchApi.search(query);
         ArrayList<SearchedContent> results = new ArrayList<>();
-        for (SearchedContent searchedContent : searchedContentList) {
+        for (TavilySearchResponse.ResultInfo resultInfo: response.getResults()) {
             results.add(
                     new SearchedContent(
-                            searchedContent.title(),
-                            searchedContent.content()
+                            resultInfo.getTitle(),
+                            resultInfo.getContent()
                     )
             );
         }
-
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("background_investigation_results", results);
         return resultMap;
