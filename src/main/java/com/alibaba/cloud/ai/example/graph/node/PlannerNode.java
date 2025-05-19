@@ -33,8 +33,8 @@ public class PlannerNode implements NodeAction {
     private final BeanOutputConverter<Plan> converter;
 
 
-    public PlannerNode(ChatClient chatClient) {
-        this.chatClient = chatClient;
+    public PlannerNode(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
         this.converter = new BeanOutputConverter<>(
                 new ParameterizedTypeReference<Plan>() {
                 }
@@ -44,7 +44,7 @@ public class PlannerNode implements NodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         logger.info("Planner node is running.");
-        List<Message> messages = TemplateUtil.applyPromptTemplate("coordinator", state);
+        List<Message> messages = TemplateUtil.applyPromptTemplate("planner", state);
         Integer planIterations = state.value("plan_iterations", 0);
         Boolean enableBackgroundInvestigation = state.value("enable_background_investigation", false);
         ArrayList<String> backgroundInvestigationResults = state.value("background_investigation_results", new ArrayList<>());
@@ -69,12 +69,13 @@ public class PlannerNode implements NodeAction {
 
         String promptUserSpec = """
                 format: 以纯文本输出 json，请不要包含任何多余的文字——包括 markdown 格式;
-                outputExample: {format};
+                outputExample: $format$;
                 """;
 
         String result = chatClient.prompt()
                 .user(u -> u.text(promptUserSpec)
-                        .param("format", converter.getFormat())).messages(messages)
+                        .param("format", converter.getFormat()))
+                .messages(messages)
                 .call()
                 .content();
         logger.info("Planner response: {}", result);

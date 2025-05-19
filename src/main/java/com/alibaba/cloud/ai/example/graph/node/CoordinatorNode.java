@@ -29,8 +29,15 @@ public class CoordinatorNode implements NodeAction {
 
     private final ChatClient chatClient;
 
-    public CoordinatorNode(ChatClient chatClient) {
-        this.chatClient = chatClient;
+    public CoordinatorNode(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder
+                .defaultOptions(ToolCallingChatOptions.builder()
+                        .internalToolExecutionEnabled(false)  // 禁用内部工具执行
+                        .build())
+                .defaultTools(new PlannerTool())
+                .build()
+
+        ;
     }
 
     @Override
@@ -42,11 +49,6 @@ public class CoordinatorNode implements NodeAction {
         // 发起调用并获取完整响应
         ChatResponse response = chatClient.prompt()
                 .messages(messages)
-                .options(
-                        ToolCallingChatOptions.builder()
-                                .internalToolExecutionEnabled(false)  // 禁用内部工具执行
-                                .build())
-                .tools(new PlannerTool())
                 .call().chatResponse();
 
         String nextStep = END;

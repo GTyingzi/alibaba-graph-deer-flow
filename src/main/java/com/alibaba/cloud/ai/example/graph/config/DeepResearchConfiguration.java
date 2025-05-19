@@ -11,8 +11,6 @@ import com.alibaba.cloud.ai.graph.state.strategy.ReplaceStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +35,8 @@ public class DeepResearchConfiguration {
     private TavilySearchApi tavilySearchApi;
 
     @Bean
-    public StateGraph deepResearch(ChatModel chatModel) throws GraphStateException {
-        ChatClient chatClient = ChatClient.builder(chatModel).defaultAdvisors(new SimpleLoggerAdvisor()).build();
+    public StateGraph deepResearch(ChatClient.Builder chatClientBuilder) throws GraphStateException {
+
         OverAllStateFactory stateFactory = () -> {
             OverAllState state = new OverAllState();
             state.registerKeyAndStrategy("coordinator_next_node", new ReplaceStrategy());
@@ -59,14 +57,14 @@ public class DeepResearchConfiguration {
         };
 
         StateGraph stateGraph = new StateGraph("deep research", stateFactory)
-                .addNode("coordinator", node_async(new CoordinatorNode(chatClient)))
+                .addNode("coordinator", node_async(new CoordinatorNode(chatClientBuilder)))
                 .addNode("background_investigator", node_async((new BackgroundInvestigationNode(tavilySearchApi))))
-                .addNode("planner", node_async((new PlannerNode(chatClient))))
+                .addNode("planner", node_async((new PlannerNode(chatClientBuilder))))
                 .addNode("human_feedback", node_async(new HumanFeedbackNode()))
                 .addNode("research_team", node_async(new ResearchTeamNode()))
-                .addNode("researcher", node_async(new ResearcherNode(chatClient)))
+                .addNode("researcher", node_async(new ResearcherNode(chatClientBuilder)))
                 .addNode("coder", node_async(new CoderNode()))
-                .addNode("reporter", node_async((new ReporterNode(chatClient))))
+                .addNode("reporter", node_async((new ReporterNode(chatClientBuilder))))
 
                 .addEdge(START, "coordinator")
                 .addConditionalEdges("coordinator", edge_async(new CoordinatorDispatcher()),

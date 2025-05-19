@@ -21,8 +21,8 @@ public class ResearcherNode implements NodeAction {
 
     private final ChatClient researchAgent;
 
-    public ResearcherNode(ChatClient researchAgent) {
-        this.researchAgent = researchAgent;
+    public ResearcherNode(ChatClient.Builder chatClientBuilder) {
+        this.researchAgent = chatClientBuilder.build();
     }
 
 

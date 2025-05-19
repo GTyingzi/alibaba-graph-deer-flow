@@ -7,6 +7,7 @@
 ### 开发日志
 - 2025.05.17: 项目初始化
 - 2025.05.18: Deep Research工作流大纲初步完成
+- 2025.05.19: 完成CoordinatorNode、BackgroundInvestigationNode联调
 
 
 
