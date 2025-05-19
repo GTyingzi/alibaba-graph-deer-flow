@@ -13,6 +13,7 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.core.ParameterizedTypeReference;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,13 @@ public class PlannerNode implements NodeAction {
     private static final Logger logger = LoggerFactory.getLogger(PlannerNode.class);
 
     private final ChatClient chatClient;
+    private final int MAX_PLAN_ITERATIONS = 3;
+
     private final BeanOutputConverter<Plan> converter;
+    private final String PROMPT_FORMAT = """
+                format: 以纯文本输出 json，请不要包含任何多余的文字——包括 markdown 格式;
+                outputExample: {0};
+                """;
 
 
     public PlannerNode(ChatClient.Builder chatClientBuilder) {
@@ -62,26 +69,19 @@ public class PlannerNode implements NodeAction {
         }
         String nextStep = "reporter";
         Map<String, Object> updated = new HashMap<>();
-        if (planIterations > 3) {
+        if (planIterations > MAX_PLAN_ITERATIONS) {
             updated.put("planner_next_node", nextStep);
             return updated;
         }
-
-        String promptUserSpec = """
-                format: 以纯文本输出 json，请不要包含任何多余的文字——包括 markdown 格式;
-                outputExample: $format$;
-                """;
-
-        String result = chatClient.prompt()
-                .user(u -> u.text(promptUserSpec)
-                        .param("format", converter.getFormat()))
+        String result = chatClient.prompt(MessageFormat.format(PROMPT_FORMAT, converter.getFormat()))
                 .messages(messages)
                 .call()
                 .content();
         logger.info("Planner response: {}", result);
         assert result != null;
+        Plan curPlan = null;
         try {
-            Plan curPlan = converter.convert(result);
+            curPlan = converter.convert(result);
             logger.info("反序列成功，convert: {}", curPlan);
             if (curPlan.isHasEnoughContext()) {
                 logger.info("Planner response has enough context.");
@@ -103,8 +103,8 @@ public class PlannerNode implements NodeAction {
         }
 
         nextStep = "human_feedback";
-        updated.put("current_plan", result);
-        updated.put("messages", new AssistantMessage(result));
+        updated.put("current_plan", curPlan);
+        updated.put("messages", List.of(new AssistantMessage(result)));
         updated.put("planner_next_node", nextStep);
 
         return updated;

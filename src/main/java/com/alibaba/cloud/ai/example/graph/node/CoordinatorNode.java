@@ -36,7 +36,6 @@ public class CoordinatorNode implements NodeAction {
                         .build())
                 .defaultTools(new PlannerTool())
                 .build()
-
         ;
     }
 

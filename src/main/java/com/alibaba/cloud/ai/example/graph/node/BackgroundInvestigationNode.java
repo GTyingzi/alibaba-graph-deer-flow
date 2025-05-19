@@ -44,6 +44,8 @@ public class BackgroundInvestigationNode implements NodeAction {
                     )
             );
         }
+        logger.info("✅ 搜索结果: {}", results);
+
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("background_investigation_results", results);
         return resultMap;

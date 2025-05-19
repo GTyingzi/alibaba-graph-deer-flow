@@ -29,11 +29,13 @@ public class DeepResearchController {
 
     @GetMapping("/chat")
     public Map<String, Object> chat(@RequestParam(value = "query", defaultValue = "DeerFlow是什么") String query,
-                                    @RequestParam(value = "enable_background_investigation", defaultValue = "false") boolean  enableBackgroundInvestigation
+                                    @RequestParam(value = "enable_background_investigation", defaultValue = "true") boolean  enableBackgroundInvestigation,
+                                    @RequestParam(value = "enable_background_planning", defaultValue = "true") boolean  enableBackgroundPlanning
                                     ) {
         UserMessage userMessage = new UserMessage(query);
         var resultFuture = compiledGraph.invoke(Map.of(
                 "enable_background_investigation", enableBackgroundInvestigation,
+                "auto_accepted_plan", enableBackgroundPlanning,
                 "messages", List.of(userMessage)));
         var result = resultFuture.get();
         return result.data();
