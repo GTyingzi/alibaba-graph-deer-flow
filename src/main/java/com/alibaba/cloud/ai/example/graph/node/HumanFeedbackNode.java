@@ -22,24 +22,25 @@ public class HumanFeedbackNode implements NodeAction {
 
     private static final Logger logger = LoggerFactory.getLogger(PlannerNode.class);
 
-
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         logger.info("HumanFeedback node is running.");
-        String nextStep = "";
+        String nextStep = "research_team";
         Map<String, Object> updated = new HashMap<>();
 
         boolean autoAcceptedPlan = state.value("auto_accepted_plan", false);
         if (!autoAcceptedPlan) {
             //
             Scanner scanner = new Scanner(System.in);
+            logger.info("Do you accept the plan? [y/n]：");
             String feedback = scanner.next();
-            if (StringUtils.hasLength(feedback) && feedback.startsWith("[EDIT_PLAN]")) {
+            if (StringUtils.hasLength(feedback) && feedback.startsWith("y")) {
                 nextStep = "planner";
                 updated.put("human_next_node", nextStep);
                 updated.put("messages", List.of(new UserMessage(feedback)));
+                logger.info("Human feedback: {}", feedback);
                 return updated;
-            } else if(StringUtils.hasLength(feedback) && feedback.startsWith("[ACCEPT_PLAN]")) {
+            } else if(StringUtils.hasLength(feedback) && feedback.startsWith("n")) {
                 logger.info("Plan is accepted by user.");
             } else {
                 throw new Exception(String.format("Interrupt value of %s is not supported", feedback));
@@ -47,8 +48,8 @@ public class HumanFeedbackNode implements NodeAction {
         }
 
         Integer planIterations = state.value("plan_iterations", 0);
-        Plan currentPlan = state.value("current_plan", Plan.class).get();
         planIterations += 1;
+        Plan currentPlan = state.value("current_plan", Plan.class).get();
         if (currentPlan.isHasEnoughContext()) {
             nextStep = "reporter";
         }

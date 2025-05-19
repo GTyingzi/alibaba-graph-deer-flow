@@ -163,7 +163,7 @@ interface Step {
 }
 
 interface Plan {
-  locale: string; // e.g. "en-US" or "zh-CN", based on the user's language or specific request
+  // locale: string; // e.g. "en-US" or "zh-CN", based on the user's language or specific request
   has_enough_context: boolean;
   thought: string;
   title: string;
