@@ -63,7 +63,7 @@ public class DeepResearchConfiguration {
                 .addNode("planner", node_async((new PlannerNode(chatClient))))
                 .addNode("human_feedback", node_async(new HumanFeedbackNode()))
                 .addNode("research_team", node_async(new ResearchTeamNode()))
-                .addNode("researcher", node_async(new ResearcherNode()))
+                .addNode("researcher", node_async(new ResearcherNode(chatClient)))
                 .addNode("coder", node_async(new CoderNode()))
                 .addNode("reporter", node_async((new ReporterNode(chatClient))))
 

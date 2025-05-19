@@ -14,5 +14,13 @@ spring:
       include-raw-content: true
       include-images: true
       include-image-descriptions: true
+    mcp:
+      client:
+        sse:
+          servers-configuration: classpath:mcp-servers.json
+        stdio:
+          servers-configuration: classpath:mcp-servers.json
+        toolcallback:
+          enabled: true
 
 
