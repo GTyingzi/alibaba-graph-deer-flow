@@ -35,6 +35,8 @@ public class DeepResearchConfiguration {
     private TavilySearchApi tavilySearchApi;
     @Autowired
     private ChatClient researchAgent;
+    @Autowired
+    private ChatClient coderAgent;
 
     @Bean
     public StateGraph deepResearch(ChatClient.Builder chatClientBuilder) throws GraphStateException {
@@ -65,7 +67,7 @@ public class DeepResearchConfiguration {
                 .addNode("human_feedback", node_async(new HumanFeedbackNode()))
                 .addNode("research_team", node_async(new ResearchTeamNode()))
                 .addNode("researcher", node_async(new ResearcherNode(researchAgent)))
-                .addNode("coder", node_async(new CoderNode()))
+                .addNode("coder", node_async(new CoderNode(coderAgent)))
                 .addNode("reporter", node_async((new ReporterNode(chatClientBuilder))))
 
                 .addEdge(START, "coordinator")
