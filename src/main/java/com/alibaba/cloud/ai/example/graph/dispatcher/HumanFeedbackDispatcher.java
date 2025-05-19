@@ -21,6 +21,6 @@ public class HumanFeedbackDispatcher implements EdgeAction {
 
     @Override
     public String apply(OverAllState state) throws Exception {
-        return (String) state.value("human_next_step").orElse(END);
+        return (String) state.value("human_next_node", END);
     }
 }

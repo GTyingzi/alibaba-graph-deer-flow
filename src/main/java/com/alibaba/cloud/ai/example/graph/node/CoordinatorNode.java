@@ -10,6 +10,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.model.tool.ToolCallingChatOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,10 +42,15 @@ public class CoordinatorNode implements NodeAction {
         // 发起调用并获取完整响应
         ChatResponse response = chatClient.prompt()
                 .messages(messages)
+                .options(
+                        ToolCallingChatOptions.builder()
+                                .internalToolExecutionEnabled(false)  // 禁用内部工具执行
+                                .build())
                 .tools(new PlannerTool())
                 .call().chatResponse();
 
         String nextStep = END;
+        Map<String, Object> updated = new HashMap<>();
 
         // 获取 assistant 消息内容
         assert response != null;
@@ -53,7 +59,7 @@ public class CoordinatorNode implements NodeAction {
         // 判断是否触发工具调用
         if (assistantMessage.getToolCalls() != null && !assistantMessage.getToolCalls().isEmpty()) {
             logger.info("✅ 工具已调用: " + assistantMessage.getToolCalls());
-            if ((boolean) state.value("enable_background_investigation").get()) {
+            if (state.value("enable_background_investigation", false)) {
                 nextStep = "background_investigator";
             }
             for (AssistantMessage.ToolCall toolCall : assistantMessage.getToolCalls()) {
@@ -65,9 +71,8 @@ public class CoordinatorNode implements NodeAction {
         } else {
             logger.warn("❌ 未触发工具调用");
             logger.debug("Coordinator response: {}", response.getResult());
+            updated.put("output", assistantMessage.getText());
         }
-
-        Map<String, Object> updated = new HashMap<>();
         updated.put("coordinator_next_node", nextStep);
         return updated;
     }

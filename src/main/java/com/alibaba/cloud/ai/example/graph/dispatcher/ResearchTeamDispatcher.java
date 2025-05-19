@@ -12,6 +12,6 @@ import com.alibaba.cloud.ai.graph.action.EdgeAction;
 public class ResearchTeamDispatcher implements EdgeAction {
     @Override
     public String apply(OverAllState state) throws Exception {
-        return (String) state.value("research_team_next_step").orElse("planner");
+        return (String) state.value("research_team_next_node", "planner");
     }
 }

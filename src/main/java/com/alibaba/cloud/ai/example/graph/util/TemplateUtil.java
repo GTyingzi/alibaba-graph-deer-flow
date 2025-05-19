@@ -9,6 +9,7 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +41,10 @@ public class TemplateUtil {
     }
 
     public static List<Message> getMessages(OverAllState state) {
-        Optional<Object> messagesOpt = state.value("messages");
-        List<Message> messages = messagesOpt
-                .map(obj -> (List<Message>) obj)
-                .orElse(List.of());
-        return messages;
+        return state.value("messages", List.class)
+                .map(obj -> new ArrayList<>((List<Message>) obj))
+                .orElseGet(ArrayList::new);
     }
+
 
 }

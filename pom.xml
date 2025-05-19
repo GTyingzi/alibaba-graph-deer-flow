@@ -21,15 +21,27 @@
         <spring-boot.version>3.3.11</spring-boot.version>
         <spring-ai-alibaba-graph-core.version>1.0.0-M8.1-SNAPSHOT</spring-ai-alibaba-graph-core.version>
         <ai-alibaba.version>1.0.0-M8.1-SNAPSHOT</ai-alibaba.version>
+        <spring-ai.version>1.0.0-M8</spring-ai.version>
         <lombok.version>1.18.32</lombok.version>
     </properties>
 
     <dependencies>
 
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud.ai</groupId>-->
+<!--            <artifactId>spring-ai-alibaba-starter</artifactId>-->
+<!--            <version>${ai-alibaba.version}</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>com.alibaba.cloud.ai</groupId>
-            <artifactId>spring-ai-alibaba-starter</artifactId>
-            <version>${ai-alibaba.version}</version>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-autoconfigure-model-openai</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-autoconfigure-model-chat-client</artifactId>
+            <version>${spring-ai.version}</version>
         </dependency>
 
         <dependency>

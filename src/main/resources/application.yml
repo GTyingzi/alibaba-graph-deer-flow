@@ -1,13 +1,19 @@
 server:
-  port: 8096
+  port: 8080
 
 spring:
   application:
     name: Deer-Flow
 
   ai:
-    dashscope:
+    #    dashscope:
+    #      api-key: ${DASHSCOPE_API_KEY}
+    openai:
       api-key: ${DASHSCOPE_API_KEY}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      chat:
+        options:
+          model: qwen-max
     tavily:
       api-key: ${TAVILY_API_KEY}
       max-results: 3
@@ -16,3 +22,6 @@ spring:
       include-image-descriptions: true
 
 
+logging:
+  level:
+    com.alibaba.cloud.ai.example.graph: debug
