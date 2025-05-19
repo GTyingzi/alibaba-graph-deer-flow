@@ -47,6 +47,7 @@ public class DeepResearchConfiguration {
             state.registerKeyAndStrategy("research_team_next_node", new ReplaceStrategy());
 
             state.registerKeyAndStrategy("messages", new ReplaceStrategy());
+            state.registerKeyAndStrategy("output", new ReplaceStrategy());
             state.registerKeyAndStrategy("background_investigation_results", new ReplaceStrategy());
             state.registerKeyAndStrategy("enable_background_investigation", new ReplaceStrategy());
             state.registerKeyAndStrategy("plan_iterations", new ReplaceStrategy());
@@ -71,6 +72,7 @@ public class DeepResearchConfiguration {
                 .addConditionalEdges("coordinator", edge_async(new CoordinatorDispatcher()),
                         Map.of("background_investigator", "background_investigator", END, END)
                 )
+                .addEdge("background_investigator", "planner")
                 .addConditionalEdges("planner", edge_async(new PlannerDispatcher()),
                         Map.of("reporter", "reporter", "human_feedback", "human_feedback", END, END)
                 )

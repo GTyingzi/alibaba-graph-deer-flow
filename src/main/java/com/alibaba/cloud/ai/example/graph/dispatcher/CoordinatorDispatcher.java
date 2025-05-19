@@ -15,6 +15,6 @@ public class CoordinatorDispatcher implements EdgeAction {
 
     @Override
     public String apply(OverAllState state) {
-        return (String) state.value("coordinator_next_step").orElse(END);
+        return (String) state.value("coordinator_next_node", END);
     }
 }

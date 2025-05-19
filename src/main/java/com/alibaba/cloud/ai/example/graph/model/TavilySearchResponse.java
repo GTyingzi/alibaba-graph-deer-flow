@@ -18,6 +18,7 @@ public class TavilySearchResponse {
     @JsonProperty("response_time")
     private double responseTime;
 
+
     public class ImageInfo {
         private String url;
         private String description;

@@ -29,10 +29,9 @@ public class BackgroundInvestigationNode implements NodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         logger.info("background investigation node is running.");
-        Optional<Object> messagesOpt = state.value("messages");
-        List<Message> messages = messagesOpt
-                .map(obj -> (List<Message>) obj)
-                .orElse(List.of());
+        List<Message> messages = state.value("messages", List.class)
+                .map(obj -> new ArrayList<>((List<Message>) obj))
+                .orElseGet(ArrayList::new);
         Message lastMessage = messages.isEmpty() ? null : messages.get(messages.size() - 1);
         String query = lastMessage.getText();
         TavilySearchResponse response = tavilySearchApi.search(query);

@@ -6,10 +6,9 @@ import com.alibaba.cloud.ai.graph.StateGraph;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,9 +28,13 @@ public class DeepResearchController {
     }
 
     @GetMapping("/chat")
-    public Map<String, Object> chat(String prompt) {
-        UserMessage userMessage = new UserMessage(prompt);
-        var resultFuture = compiledGraph.invoke(Map.of("messages", userMessage));
+    public Map<String, Object> chat(@RequestParam(value = "query", defaultValue = "DeerFlow是什么") String query,
+                                    @RequestParam(value = "enable_background_investigation", defaultValue = "false") boolean  enableBackgroundInvestigation
+                                    ) {
+        UserMessage userMessage = new UserMessage(query);
+        var resultFuture = compiledGraph.invoke(Map.of(
+                "enable_background_investigation", enableBackgroundInvestigation,
+                "messages", List.of(userMessage)));
         var result = resultFuture.get();
         return result.data();
     }

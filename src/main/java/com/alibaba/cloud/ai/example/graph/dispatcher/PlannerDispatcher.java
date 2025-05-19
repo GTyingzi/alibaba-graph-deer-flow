@@ -15,6 +15,6 @@ public class PlannerDispatcher implements EdgeAction {
 
     @Override
     public String apply(OverAllState state) {
-        return (String) state.value("planner_next_step").orElse(END);
+        return (String) state.value("planner_next_node", END);
     }
 }
