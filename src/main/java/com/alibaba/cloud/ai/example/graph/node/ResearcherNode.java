@@ -3,6 +3,7 @@ package com.alibaba.cloud.ai.example.graph.node;
 import com.alibaba.cloud.ai.example.graph.model.Plan;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
+import io.modelcontextprotocol.client.McpSyncClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -11,6 +12,9 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
 import java.util.*;
 
@@ -21,15 +25,13 @@ public class ResearcherNode implements NodeAction {
 
     private final ChatClient researchAgent;
 
-    public ResearcherNode(ChatClient.Builder chatClientBuilder) {
-        this.researchAgent = chatClientBuilder.build();
+    public ResearcherNode(ChatClient researchAgent) {
+        this.researchAgent = researchAgent;
     }
-
 
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
 
-        logger.info("ResearcherNode apply");
         Plan currentPlan = state.value("current_plan", Plan.class).get();
         List<String> observations = state.value("observations", List.class)
                 .map(list -> (List<String>) list)
@@ -59,14 +61,13 @@ public class ResearcherNode implements NodeAction {
         messages.add(citationMessage);
 
         // 调用agent
-        ChatResponse chatResponse = researchAgent.prompt()
+        String content = researchAgent.prompt()
                 .messages(messages)
-                .call().chatResponse();
-        String content = chatResponse.getResult().getOutput().getText();
+                .call()
+                .content();
         unexecutedStep.setExecutionRes(content);
 
         Map<String, Object> updated = new HashMap<>();
-
         updated.put("messages", new AssistantMessage(content));
         updated.put("observations",
                 observations.add(content)
