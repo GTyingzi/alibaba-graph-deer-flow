@@ -32,4 +32,4 @@ spring:
 
 logging:
   level:
-    com.alibaba.cloud.ai.example.graph: debug
+    com:alibaba.cloud.ai.example.graph: debug
