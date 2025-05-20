@@ -12,6 +12,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.core.ParameterizedTypeReference;
+import reactor.core.publisher.Flux;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -73,10 +74,12 @@ public class PlannerNode implements NodeAction {
             updated.put("planner_next_node", nextStep);
             return updated;
         }
-        String result = chatClient.prompt(MessageFormat.format(PROMPT_FORMAT, converter.getFormat()))
+        Flux<String> StreamResult = chatClient.prompt(MessageFormat.format(PROMPT_FORMAT, converter.getFormat()))
                 .messages(messages)
-                .call()
+                .stream()
                 .content();
+
+        String result = StreamResult.reduce((acc, next) -> acc + next).block();
         logger.info("Planner response: {}", result);
         assert result != null;
         Plan curPlan = null;

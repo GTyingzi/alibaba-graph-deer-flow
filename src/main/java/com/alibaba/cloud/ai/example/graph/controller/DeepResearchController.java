@@ -28,7 +28,7 @@ public class DeepResearchController {
     }
 
     @GetMapping("/chat")
-    public Map<String, Object> chat(@RequestParam(value = "query", defaultValue = "DeerFlow是什么") String query,
+    public Map<String, Object> chat(@RequestParam(value = "query", defaultValue = "草莓蛋糕怎么做呀") String query,
                                     @RequestParam(value = "enable_background_investigation", defaultValue = "true") boolean  enableBackgroundInvestigation,
                                     @RequestParam(value = "enable_background_planning", defaultValue = "true") boolean  enableBackgroundPlanning
                                     ) {

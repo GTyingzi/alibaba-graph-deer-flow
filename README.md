@@ -14,3 +14,4 @@
 
 ### 工具
 tavily API文档：https://docs.tavily.com/documentation/api-reference/endpoint/search
+高德地图MCP：https://lbs.amap.com/api/mcp-server/gettingstarted#t1

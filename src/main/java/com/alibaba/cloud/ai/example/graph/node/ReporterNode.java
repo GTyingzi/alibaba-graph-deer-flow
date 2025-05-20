@@ -10,9 +10,11 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import reactor.core.publisher.Flux;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author yingzi
@@ -53,11 +55,12 @@ public class ReporterNode implements NodeAction {
             messages.add(new UserMessage(observation));
         }
         logger.debug("Reporter node is running, messages: {}", messages);
-        String content = chatClient.prompt().messages(messages).call().content();
+        Flux<String> streamConent = chatClient.prompt().messages(messages).stream().content();
+        String finalContent = streamConent.reduce((acc, next) -> acc + next).block();
 
-        logger.info("final report: {}", content);
+        logger.info("final report: {}", finalContent);
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("final_report", content);
+        resultMap.put("final_report", finalContent);
         return resultMap;
     }
 }
